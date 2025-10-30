@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOMD Portal - International Pharmaceuticals Incorporated</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #4a5f7a 100%);
+            color: white;
+            padding: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .company-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .company-logo {
+            width: 50px;
+            height: 50px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .company-text h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .company-text .department {
+            font-size: 1rem;
+            color: var(--light);
+            font-weight: 300;
+        }
+
+        .admin-access {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .admin-btn, .logout-btn {
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-btn {
+            background-color: var(--accent);
+        }
+
+        .logout-btn {
+            background-color: #7f8c8d;
+        }
+
+        .admin-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .logout-btn:hover {
+            background-color: #636e72;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Navigation Styles */
+        .nav-container {
+            position: relative;
+        }
+
+        .main-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0;
+        }
+
+        .nav-sections {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-btn {
+            background: transparent;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-btn.active {
+            background: white;
+            color: var(--primary);
+        }
+
+        .nav-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            width: 300px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .nav-item.active .nav-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .nav-links li {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .nav-links li:last-child {
+            border-bottom: none;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--dark);
+            transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .nav-links i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Mission Vision Section */
+        .mission-vision {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--secondary);
+            border-radius: 2px;
+        }
+
+        .mv-container {
+            display: flex;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .mv-card {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .mv-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .mv-card.mission {
+            border-top: 5px solid var(--success);
+        }
+
+        .mv-card.vision {
+            border-top: 5px solid var(--warning);
+        }
+
+        .mv-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .mission .mv-icon {
+            background: var(--success);
+        }
+
+        .vision .mv-icon {
+            background: var(--warning);
+        }
+
+        .mv-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .mv-card p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .mv-highlight {
+            background: linear-gradient(120deg, transparent 0%, transparent 50%, rgba(52, 152, 219, 0.1) 50%, rgba(52, 152, 219, 0.2) 100%);
+            background-size: 220% 100%;
+            background-position: 100% 0;
+            transition: all 0.5s ease;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .mv-card:hover .mv-highlight {
+            background-position: 0 0;
+        }
+
+        /* Main Content */
+        main {
+            padding: 60px 0;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .welcome-message {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .admin-notice {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            font-size: 1rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .admin-notice a {
+            color: #e74c3c;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .admin-notice a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            color: var(--light);
+            padding: 40px 0 20px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--light);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary);
+        }
+
+        .copyright {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #bdc3c7;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-card {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .mission-card {
+            animation-delay: 0.2s;
+        }
+
+        .vision-card {
+            animation-delay: 0.4s;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1100px) {
+            .mv-container {
+                flex-direction: column;
+                max-width: 700px;
+            }
+            
+            .nav-sections {
+                gap: 0;
+            }
+            
+            .nav-btn {
+                padding: 15px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-top {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .company-info {
+                flex-direction: column;
+            }
+            
+            .admin-access {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .nav-sections {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .mv-card {
+                padding: 30px 25px;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-btn {
+                padding: 12px 10px;
+                font-size: 0.85rem;
+            }
+            
+            .nav-btn span {
+                display: none;
+            }
+            
+            .mv-card {
+                padding: 25px 20px;
+            }
+            
+            .mv-card h3 {
+                font-size: 1.5rem;
+            }
+            
+            .mv-card p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="company-info">
+                    <div class="company-logo">IPI</div>
+                    <div class="company-text">
+                        <h1>FOMD Portal</h1>
+                        <div class="department">Facilities Operation & Maintenance Department</div>
+                    </div>
+                </div>
+                <div class="admin-access">
+                    <a href="administrator.html" class="admin-btn">
+                        <i class="fas fa-cog"></i> Administrator Access
+                    </a>
+                    <a href="login.html" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Log Out
+                    </a>
+                </div>
+            </div>
+            
+            <div class="nav-container">
+                <nav class="main-nav">
+                    <div class="nav-sections">
+                        <div class="nav-item">
+                            <button class="nav-btn">
+                                <i class="fas fa-users"></i> <span>Personnel</span>
+                            </button>
+                            <div class="nav-content">
+                                <ul class="nav-links">
+                                    <li><a href="staff-directory.html"><i class="fas fa-address-book"></i> Staff Directory</a></li>
+                                    <li><a href="attendance.html"><i class="fas fa-user-check"></i> Attendance & Leave Monitoring</a></li>
+                                    <li><a href="file:///C:/Users/IPI/Desktop/FOMD%20Portal/orgchart.html"><i class="fas fa-sitemap"></i> Organization Chart</a></li>
+                                    <li><a href="#"><i class="fas fa-chart-line"></i> Performance Reviews</a></li>
+                                    <li><a href="#"><i class="fas fa-certificate"></i> Certification Tracking</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="nav-item">
+                            <button class="nav-btn">
+                                <i class="fas fa-tools"></i> <span>Maintenance</span>
+                            </button>
+                            <div class="nav-content">
+                                <ul class="nav-links">
+                                    <li><a href="#"><i class="fas fa-clipboard-list"></i> Work Order System</a></li>
+                                    <li><a href="#"><i class="fas fa-calendar-check"></i> Preventive Maintenance</a></li>
+                                    <li><a href="#"><i class="fas fa-history"></i> Equipment History</a></li>
+                                    <li><a href="#"><i class="fas fa-calendar-day"></i> Maintenance Calendar</a></li>
+                                    <li><a href="#"><i class="fas fa-handshake"></i> Vendor Management</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="nav-item">
+                            <button class="nav-btn">
+                                <i class="fas fa-bolt"></i> <span>Utilities</span>
+                            </button>
+                            <div class="nav-content">
+                                <ul class="nav-links">
+                                    <li><a href="#"><i class="fas fa-chart-bar"></i> Energy Monitoring</a></li>
+                                    <li><a href="#"><i class="fas fa-wind"></i> HVAC Systems</a></li>
+                                    <li><a href="#"><i class="fas fa-tint"></i> Water Management</a></li>
+                                    <li><a href="#"><i class="fas fa-plug"></i> Power Systems</a></li>
+                                    <li><a href="#"><i class="fas fa-leaf"></i> Environmental Controls</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="nav-item">
+                            <button class="nav-btn">
+                                <i class="fas fa-boxes"></i> <span>Inventory</span>
+                            </button>
+                            <div class="nav-content">
+                                <ul class="nav-links">
+                                    <li><a href="#"><i class="fas fa-cogs"></i> Spare Parts Inventory</a></li>
+                                    <li><a href="#"><i class="fas fa-file-invoice-dollar"></i> Purchase Orders</a></li>
+                                    <li><a href="#"><i class="fas fa-address-book"></i> Supplier Database</a></li>
+                                    <li><a href="#"><i class="fas fa-chart-line"></i> Stock Level Monitoring</a></li>
+                                    <li><a href="#"><i class="fas fa-clipboard-check"></i> Material Requests</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="nav-item">
+                            <button class="nav-btn">
+                                <i class="fas fa-file-contract"></i> <span>Compliance</span>
+                            </button>
+                            <div class="nav-content">
+                                <ul class="nav-links">
+                                    <li><a href="#"><i class="fas fa-book"></i> SOP Library</a></li>
+                                    <li><a href="#"><i class="fas fa-balance-scale"></i> Regulatory Compliance</a></li>
+                                    <li><a href="#"><i class="fas fa-clipboard-check"></i> Audit Reports</a></li>
+                                    <li><a href="#"><i class="fas fa-hard-hat"></i> Safety Documentation</a></li>
+                                    <li><a href="#"><i class="fas fa-award"></i> Quality Assurance Records</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="mission-vision">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Mission & Vision</h2>
+                <p>Guiding Principles for Facilities Operation and Maintenance</p>
+            </div>
+            
+            <div class="mv-container">
+                <div class="mv-card mission animate-card mission-card">
+                    <div class="mv-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h3>Mission Statement</h3>
+                    <p>
+                        <span class="mv-highlight">Our Purpose – What we do, for whom, and how</span><br><br>
+                        To ensure the <span class="mv-highlight">uninterrupted, safe, and efficient operation</span> of all plant facilities, utilities, and production-support assets. We achieve this through <span class="mv-highlight">proactive maintenance, swift emergency response, and seamless collaboration</span> with all internal and external partners. Our mission is to provide a reliable, compliant, and high-performing physical environment that directly enables production to meet its goals.
+                    </p>
+                </div>
+                
+                <div class="mv-card vision animate-card vision-card">
+                    <div class="mv-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>Vision Statement</h3>
+                    <p>
+                        <span class="mv-highlight">Our Aspiration – What we aim to become</span><br><br>
+                        To be recognized as a <span class="mv-highlight">world-class, data-driven maintenance organization</span> and a strategic partner to the business. We aspire to move beyond reactive service to <span class="mv-highlight">predictive excellence</span>, where our foresight and continuous improvement efforts not only prevent failures but also enhance asset life, optimize total cost of ownership, and actively contribute to the company's competitive advantage.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <div class="container">
+            <div class="welcome-section">
+                <p class="welcome-message">
+                    Welcome to the Facilities Operation and Maintenance Department Portal. 
+                    This centralized platform provides access to all department resources, tools, and systems. 
+                    Use the navigation above to explore different functional areas.
+                </p>
+                <div class="admin-notice">
+                    <strong>Administrator Note:</strong> Need to manage employee records? 
+                    <a href="administrator.html">Click here to access the Administrator Portal</a> 
+                    for adding, editing, or deleting personnel information.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">International Pharmaceuticals Incorporated</div>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Use</a>
+                    <a href="#">Contact Us</a>
+                    <a href="#">Help & Support</a>
+                </div>
+            </div>
+            <div class="copyright">
+                © 2023 FOMD Portal. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation functionality
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                const btn = item.querySelector('.nav-btn');
+                
+                btn.addEventListener('click', function() {
+                    // Close all other nav items
+                    navItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current item
+                    item.classList.toggle('active');
+                });
+            });
+            
+            // Close nav dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.nav-item')) {
+                    navItems.forEach(item => {
+                        item.classList.remove('active');
+                    });
+                }
+            });
+            
+            // Animation for mission/vision cards on scroll
+            const observerOptions = {
+                threshold: 0.2,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-card');
+                    }
+                });
+            }, observerOptions);
+            
+            const cards = document.querySelectorAll('.mv-card');
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

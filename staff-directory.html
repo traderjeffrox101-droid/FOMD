@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Directory - FOMD Portal</title>
+    <!-- Include jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(to right, #2c3e50, #4a5f7a);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 5px solid #95a5a6;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .company-name {
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+            color: #ecf0f1;
+        }
+
+        .portal-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .department-name {
+            font-size: 1.4rem;
+            font-weight: 300;
+            margin-top: 10px;
+            color: #bdc3c7;
+        }
+
+        .breadcrumb {
+            background-color: #ecf0f1;
+            padding: 10px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .breadcrumb a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            padding: 20px 0;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #bdc3c7;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .personnel-count {
+            background-color: #34495e;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .status-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .filter-btn {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background-color: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .export-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .export-btn:hover {
+            background-color: #219653;
+        }
+
+        .back-btn {
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background-color: #7f8c8d;
+        }
+
+        .admin-link {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .admin-link:hover {
+            background-color: #2980b9;
+        }
+
+        .table-container {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+
+        th {
+            background-color: #34495e;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 500;
+            position: relative;
+            cursor: pointer;
+        }
+
+        th.sortable:after {
+            content: '↕';
+            position: absolute;
+            right: 8px;
+            opacity: 0.6;
+        }
+
+        th.sort-asc:after {
+            content: '↑';
+            opacity: 1;
+        }
+
+        th.sort-desc:after {
+            content: '↓';
+            opacity: 1;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .read-only-note {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .status-active { color: #2ecc71; font-weight: 500; }
+        .status-resigned { color: #e67e22; font-weight: 500; }
+        .status-retired { color: #3498db; font-weight: 500; }
+        .status-terminated { color: #e74c3c; font-weight: 500; }
+
+        .employment-regular { color: #2ecc71; font-weight: 500; }
+        .employment-probationary { color: #f39c12; font-weight: 500; }
+        .employment-contractual { color: #3498db; font-weight: 500; }
+
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-input {
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            width: 300px;
+            font-size: 1rem;
+        }
+
+        .search-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .search-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .clear-search {
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .clear-search:hover {
+            background-color: #7f8c8d;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .stat-active { border-left: 4px solid #2ecc71; }
+        .stat-resigned { border-left: 4px solid #e67e22; }
+        .stat-retired { border-left: 4px solid #3498db; }
+        .stat-terminated { border-left: 4px solid #e74c3c; }
+
+        footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-logo {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+            
+            .search-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="company-name">International Pharmaceuticals Incorporated</div>
+            <h1 class="portal-title">FOMD Portal</h1>
+            <div class="department-name">Facilities Operation and Maintenance Department</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.html">FOMD Portal</a> &gt; 
+            <a href="index.html#personnel-management">Personnel Management</a> &gt; 
+            Staff Directory
+        </div>
+
+        <main>
+            <h1 class="page-title">Staff Directory</h1>
+            
+            <div class="read-only-note">
+                <strong>Note:</strong> This page is for viewing only. To add, edit, or delete employee records, please use the Administrator Portal.
+            </div>
+            
+            <div class="stats-container" id="statsContainer">
+                <!-- Statistics cards will be added dynamically -->
+            </div>
+            
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search by name, ID, or position...">
+                <button class="search-btn" id="searchBtn">Search</button>
+                <button class="clear-search" id="clearSearchBtn">Clear</button>
+            </div>
+            
+            <div class="controls">
+                <div>
+                    <div class="personnel-count">
+                        Total Personnel: <span id="totalPersonnel">0</span>
+                    </div>
+                    <div class="status-filter" id="statusFilter">
+                        <button class="filter-btn active" data-status="ALL">All</button>
+                        <button class="filter-btn" data-status="ACTIVE">Active</button>
+                        <button class="filter-btn" data-status="RESIGNED">Resigned</button>
+                        <button class="filter-btn" data-status="RETIRED">Retired</button>
+                        <button class="filter-btn" data-status="TERMINATED">Terminated</button>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="export-btn" id="exportPdfBtn">Export to PDF</button>
+                    <a href="administrator.html" class="admin-link">Administrator Portal</a>
+                    <a href="index.html" class="back-btn">Back to Portal</a>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="personnelTable">
+                    <thead>
+                        <tr>
+                            <th width="20%" class="sortable" data-sort="name">Employee Name</th>
+                            <th width="12%" class="sortable" data-sort="id">ID Number</th>
+                            <th width="12%" class="sortable" data-sort="dateHired">Date Hired</th>
+                            <th width="10%" class="sortable" data-sort="status">Status</th>
+                            <th width="18%" class="sortable" data-sort="position">Current Position</th>
+                            <th width="15%" class="sortable" data-sort="employmentStatus">Employment Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="personnelTableBody">
+                        <!-- Table rows will be added dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">International Pharmaceuticals Incorporated</div>
+                <div class="copyright">© 2023 FOMD Portal. All rights reserved.</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const personnelTableBody = document.getElementById('personnelTableBody');
+            const totalPersonnelElement = document.getElementById('totalPersonnel');
+            const statusFilter = document.getElementById('statusFilter');
+            const exportPdfBtn = document.getElementById('exportPdfBtn');
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+            const statsContainer = document.getElementById('statsContainer');
+            const sortableHeaders = document.querySelectorAll('th.sortable');
+            
+            let currentFilter = 'ALL';
+            let currentSearch = '';
+            let currentSort = { column: 'name', direction: 'asc' };
+            let personnelData = [];
+            
+            // Function to load personnel data
+            function loadPersonnelData() {
+                return JSON.parse(localStorage.getItem('fomdPersonnelData')) || [
+                    { 
+                        name: 'John Smith', 
+                        id: 'IPI-001', 
+                        dateHired: '2020-03-15', 
+                        status: 'ACTIVE',
+                        position: 'Department Head',
+                        employmentStatus: 'Regular'
+                    },
+                    { 
+                        name: 'Maria Garcia', 
+                        id: 'IPI-002', 
+                        dateHired: '2019-07-22', 
+                        status: 'ACTIVE',
+                        position: 'Chemical Engineer',
+                        employmentStatus: 'Regular'
+                    },
+                    { 
+                        name: 'Robert Johnson', 
+                        id: 'IPI-003', 
+                        dateHired: '2021-11-05', 
+                        status: 'ACTIVE',
+                        position: 'Maintenance Technician',
+                        employmentStatus: 'Regular'
+                    },
+                    { 
+                        name: 'Sarah Williams', 
+                        id: 'IPI-004', 
+                        dateHired: '2018-05-12', 
+                        status: 'RESIGNED',
+                        position: 'Section Supervisor',
+                        employmentStatus: 'Regular'
+                    },
+                    { 
+                        name: 'Michael Brown', 
+                        id: 'IPI-005', 
+                        dateHired: '2022-02-28', 
+                        status: 'ACTIVE',
+                        position: 'Operator',
+                        employmentStatus: 'Probationary'
+                    },
+                    { 
+                        name: 'David Wilson', 
+                        id: 'IPI-006', 
+                        dateHired: '2023-01-15', 
+                        status: 'ACTIVE',
+                        position: 'Others',
+                        positionOther: 'Safety Officer',
+                        employmentStatus: 'Contractual'
+                    },
+                    { 
+                        name: 'Jennifer Lee', 
+                        id: 'IPI-007', 
+                        dateHired: '2021-06-10', 
+                        status: 'ACTIVE',
+                        position: 'Department Secretary',
+                        employmentStatus: 'Regular'
+                    }
+                ];
+            }
+            
+            // Function to update statistics
+            function updateStatistics() {
+                const statusCounts = {
+                    ACTIVE: 0,
+                    RESIGNED: 0,
+                    RETIRED: 0,
+                    TERMINATED: 0
+                };
+                
+                personnelData.forEach(person => {
+                    if (statusCounts.hasOwnProperty(person.status)) {
+                        statusCounts[person.status]++;
+                    }
+                });
+                
+                statsContainer.innerHTML = `
+                    <div class="stat-card stat-active">
+                        <div class="stat-value">${statusCounts.ACTIVE}</div>
+                        <div class="stat-label">Active</div>
+                    </div>
+                    <div class="stat-card stat-resigned">
+                        <div class="stat-value">${statusCounts.RESIGNED}</div>
+                        <div class="stat-label">Resigned</div>
+                    </div>
+                    <div class="stat-card stat-retired">
+                        <div class="stat-value">${statusCounts.RETIRED}</div>
+                        <div class="stat-label">Retired</div>
+                    </div>
+                    <div class="stat-card stat-terminated">
+                        <div class="stat-value">${statusCounts.TERMINATED}</div>
+                        <div class="stat-label">Terminated</div>
+                    </div>
+                `;
+            }
+            
+            // Function to filter and sort data
+            function getFilteredAndSortedData() {
+                let filteredData = personnelData;
+                
+                // Apply status filter
+                if (currentFilter !== 'ALL') {
+                    filteredData = filteredData.filter(person => person.status === currentFilter);
+                }
+                
+                // Apply search filter
+                if (currentSearch) {
+                    const searchLower = currentSearch.toLowerCase();
+                    filteredData = filteredData.filter(person => 
+                        person.name.toLowerCase().includes(searchLower) ||
+                        person.id.toLowerCase().includes(searchLower) ||
+                        person.position.toLowerCase().includes(searchLower) ||
+                        (person.position === 'Others' && person.positionOther && 
+                         person.positionOther.toLowerCase().includes(searchLower))
+                    );
+                }
+                
+                // Apply sorting
+                filteredData.sort((a, b) => {
+                    let aValue, bValue;
+                    
+                    switch (currentSort.column) {
+                        case 'name':
+                            aValue = a.name;
+                            bValue = b.name;
+                            break;
+                        case 'id':
+                            aValue = a.id;
+                            bValue = b.id;
+                            break;
+                        case 'dateHired':
+                            aValue = new Date(a.dateHired);
+                            bValue = new Date(b.dateHired);
+                            break;
+                        case 'status':
+                            aValue = a.status;
+                            bValue = b.status;
+                            break;
+                        case 'position':
+                            aValue = a.position === 'Others' && a.positionOther ? a.positionOther : a.position;
+                            bValue = b.position === 'Others' && b.positionOther ? b.positionOther : b.position;
+                            break;
+                        case 'employmentStatus':
+                            aValue = a.employmentStatus;
+                            bValue = b.employmentStatus;
+                            break;
+                        default:
+                            aValue = a.name;
+                            bValue = b.name;
+                    }
+                    
+                    if (aValue < bValue) return currentSort.direction === 'asc' ? -1 : 1;
+                    if (aValue > bValue) return currentSort.direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+                
+                return filteredData;
+            }
+            
+            // Function to update the table and personnel count
+            function updateTable() {
+                personnelData = loadPersonnelData();
+                const filteredData = getFilteredAndSortedData();
+                
+                // Clear the table body
+                personnelTableBody.innerHTML = '';
+                
+                // Add rows for each personnel
+                filteredData.forEach((person, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // Name column
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = person.name;
+                    
+                    // ID column
+                    const idCell = document.createElement('td');
+                    idCell.textContent = person.id;
+                    
+                    // Date Hired column
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = formatDate(person.dateHired);
+                    
+                    // Status column
+                    const statusCell = document.createElement('td');
+                    statusCell.textContent = person.status;
+                    statusCell.className = `status-${person.status.toLowerCase()}`;
+                    
+                    // Current Position column
+                    const positionCell = document.createElement('td');
+                    if (person.position === 'Others' && person.positionOther) {
+                        positionCell.textContent = person.positionOther;
+                    } else {
+                        positionCell.textContent = person.position;
+                    }
+                    
+                    // Employment Status column
+                    const employmentStatusCell = document.createElement('td');
+                    employmentStatusCell.textContent = person.employmentStatus;
+                    employmentStatusCell.className = `employment-${person.employmentStatus.toLowerCase()}`;
+                    
+                    row.appendChild(nameCell);
+                    row.appendChild(idCell);
+                    row.appendChild(dateCell);
+                    row.appendChild(statusCell);
+                    row.appendChild(positionCell);
+                    row.appendChild(employmentStatusCell);
+                    
+                    personnelTableBody.appendChild(row);
+                });
+                
+                // Update personnel count
+                totalPersonnelElement.textContent = filteredData.length;
+                
+                // Update statistics
+                updateStatistics();
+            }
+            
+            // Format date for display
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+            }
+            
+            // Export to PDF function
+            function exportToPDF() {
+                // Load personnel data
+                const filteredData = getFilteredAndSortedData();
+                
+                if (filteredData.length === 0) {
+                    alert('No employees to export.');
+                    return;
+                }
+                
+                // Create new PDF document
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add title
+                doc.setFontSize(16);
+                doc.setFont(undefined, 'bold');
+                doc.text('FOMD Staff Directory', 14, 15);
+                
+                // Add company name
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'normal');
+                doc.text('International Pharmaceuticals Incorporated', 14, 22);
+                doc.text('Facilities Operation and Maintenance Department', 14, 28);
+                
+                // Add export date and filter info
+                const exportDate = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                doc.text(`Exported on: ${exportDate}`, 14, 34);
+                
+                let filterInfo = 'All Employees';
+                if (currentFilter !== 'ALL') {
+                    filterInfo = `${currentFilter.charAt(0) + currentFilter.slice(1).toLowerCase()} Employees`;
+                }
+                if (currentSearch) {
+                    filterInfo += ` (Search: "${currentSearch}")`;
+                }
+                doc.text(`Filter: ${filterInfo}`, 14, 40);
+                
+                // Prepare table data
+                const tableData = filteredData.map(person => [
+                    person.name,
+                    person.id,
+                    formatDate(person.dateHired),
+                    person.status,
+                    person.position === 'Others' && person.positionOther ? person.positionOther : person.position,
+                    person.employmentStatus
+                ]);
+                
+                // Add table
+                doc.autoTable({
+                    startY: 50,
+                    head: [['Employee Name', 'ID Number', 'Date Hired', 'Status', 'Current Position', 'Employment Status']],
+                    body: tableData,
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [52, 73, 94],
+                        textColor: 255,
+                        fontStyle: 'bold'
+                    },
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: 3
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 35 },
+                        1: { cellWidth: 25 },
+                        2: { cellWidth: 25 },
+                        3: { cellWidth: 20 },
+                        4: { cellWidth: 35 },
+                        5: { cellWidth: 30 }
+                    },
+                    margin: { top: 50 }
+                });
+                
+                // Add footer
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(8);
+                    doc.text(`Page ${i} of ${pageCount}`, doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 10, { align: 'center' });
+                }
+                
+                // Save the PDF
+                doc.save(`FOMD_Staff_Directory_${new Date().toISOString().split('T')[0]}.pdf`);
+            }
+            
+            // Initialize the table
+            updateTable();
+            
+            // Set up status filter buttons
+            statusFilter.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active button
+                    statusFilter.querySelectorAll('.filter-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Update filter and refresh table
+                    currentFilter = this.getAttribute('data-status');
+                    updateTable();
+                });
+            });
+            
+            // Set up search functionality
+            searchBtn.addEventListener('click', function() {
+                currentSearch = searchInput.value.trim();
+                updateTable();
+            });
+            
+            searchInput.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    currentSearch = searchInput.value.trim();
+                    updateTable();
+                }
+            });
+            
+            clearSearchBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                currentSearch = '';
+                updateTable();
+            });
+            
+            // Set up sorting functionality
+            sortableHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const column = this.getAttribute('data-sort');
+                    
+                    // Update sort direction
+                    if (currentSort.column === column) {
+                        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        currentSort.column = column;
+                        currentSort.direction = 'asc';
+                    }
+                    
+                    // Update UI
+                    sortableHeaders.forEach(h => {
+                        h.classList.remove('sort-asc', 'sort-desc');
+                    });
+                    
+                    this.classList.add(currentSort.direction === 'asc' ? 'sort-asc' : 'sort-desc');
+                    
+                    // Update table
+                    updateTable();
+                });
+            });
+            
+            // Set up PDF export button
+            exportPdfBtn.addEventListener('click', exportToPDF);
+            
+            // Update table when localStorage changes (from admin page)
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'fomdPersonnelData') {
+                    updateTable();
+                }
+            });
+            
+            // Also update when the page becomes visible again
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    updateTable();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

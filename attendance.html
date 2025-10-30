@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance & Leave Monitoring - FOMD Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #4a5f7a 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 0 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .company-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .company-logo {
+            width: 50px;
+            height: 50px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .company-text h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .company-text .department {
+            font-size: 1rem;
+            color: var(--light);
+            font-weight: 300;
+        }
+
+        .admin-access .admin-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .admin-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+
+        .back-btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        main {
+            padding: 40px 0;
+        }
+
+        .attendance-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .attendance-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .attendance-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .summary-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .summary-card .value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .action-btn.primary {
+            background: var(--success);
+        }
+
+        .action-btn.primary:hover {
+            background: #27ae60;
+        }
+
+        .action-btn.warning {
+            background: var(--warning);
+        }
+
+        .action-btn.warning:hover {
+            background: #e67e22;
+        }
+
+        /* Leave Application Section */
+        .leave-application {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            border-color: var(--secondary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .submit-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto 0;
+            width: 200px;
+        }
+
+        .submit-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Leave Applications Table */
+        .leave-applications {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        .applications-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1300px;
+        }
+
+        .applications-table th {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .applications-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .applications-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .applications-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .status-pending {
+            color: var(--warning);
+            font-weight: 500;
+        }
+
+        .status-approved {
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .status-rejected {
+            color: var(--danger);
+            font-weight: 500;
+        }
+
+        .action-button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 2px;
+        }
+
+        .confirm-btn {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .confirm-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .noted-btn {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .noted-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .approve-btn {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .reject-btn {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .reject-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .edit-btn {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #e67e22;
+        }
+
+        .delete-btn {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .export-btn {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .export-btn:hover {
+            background-color: #1a252f;
+        }
+
+        .action-button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        /* Export Controls */
+        .export-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .export-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .export-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .date-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .date-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary);
+            color: var(--light);
+            padding: 40px 0 20px;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--light);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary);
+        }
+
+        .copyright {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #bdc3c7;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .header-top {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .company-info {
+                flex-direction: column;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .attendance-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .quick-actions {
+                justify-content: center;
+            }
+            
+            .form-row, .approval-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .export-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .date-range {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .attendance-container, .leave-application, .leave-applications {
+                padding: 20px 15px;
+            }
+            
+            .action-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="company-info">
+                    <div class="company-logo">IPI</div>
+                    <div class="company-text">
+                        <h1>FOMD Portal</h1>
+                        <div class="department">Facilities Operation & Maintenance Department</div>
+                    </div>
+                </div>
+                <div class="admin-access">
+                    <a href="administrator.html" class="admin-btn">
+                        <i class="fas fa-cog"></i> Administrator Access
+                    </a>
+                </div>
+            </div>
+            
+            <div class="page-header">
+                <h1 class="page-title">Attendance & Leave Monitoring</h1>
+                <a href="index.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to FOMD Portal
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="quick-actions">
+                <button class="action-btn primary" id="showLeaveForm">
+                    <i class="fas fa-plus"></i> New Leave Application
+                </button>
+                <button class="action-btn export-btn" id="exportPdfBtn">
+                    <i class="fas fa-download"></i> Export All to PDF
+                </button>
+                <button class="action-btn warning">
+                    <i class="fas fa-calendar-alt"></i> View Leave Calendar
+                </button>
+                <a href="index.html" class="action-btn">
+                    <i class="fas fa-home"></i> Portal Home
+                </a>
+            </div>
+            
+            <div class="attendance-container">
+                <h2 class="attendance-title">Employee Attendance Dashboard</h2>
+                
+                <div class="attendance-summary">
+                    <div class="summary-card">
+                        <h3>Present Today</h3>
+                        <div class="value">42</div>
+                        <p>Out of 53 employees</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>On Leave</h3>
+                        <div class="value">8</div>
+                        <p>Approved leave requests</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Absent</h3>
+                        <div class="value">3</div>
+                        <p>Unexcused absences</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Late Arrivals</h3>
+                        <div class="value">5</div>
+                        <p>Today's late arrivals</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leave Application Section -->
+            <div class="leave-application" id="leaveApplication">
+                <h2 class="section-title">Leave Application Encoding</h2>
+                
+                <form id="leaveForm">
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="employeeName">Employee Name *</label>
+                                <select id="employeeName" required>
+                                    <option value="">Select Employee</option>
+                                    <!-- Active employees will be populated by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="form-col">
+                                <label for="employeeId">Employee ID</label>
+                                <input type="text" id="employeeId" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="dateApplied">Date Applied *</label>
+                                <input type="date" id="dateApplied" required>
+                            </div>
+                            <div class="form-col">
+                                <label for="leaveType">Type of Leave *</label>
+                                <select id="leaveType" required>
+                                    <option value="">Select Leave Type</option>
+                                    <option value="VL">VL - Vacation Leave</option>
+                                    <option value="SL">SL - Sick Leave</option>
+                                    <option value="EL">EL - Emergency Leave</option>
+                                    <option value="PL">PL - Paternity Leave</option>
+                                    <option value="LWOP">LWOP - Leave Without Pay</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label for="leaveStart">Leave Start Date *</label>
+                                <input type="date" id="leaveStart" required>
+                            </div>
+                            <div class="form-col">
+                                <label for="leaveEnd">Leave End Date *</label>
+                                <input type="date" id="leaveEnd" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reason">Reason for Leave</label>
+                        <textarea id="reason" rows="3" placeholder="Please provide a reason for your leave application..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-check-circle"></i> Submit Leave Application
+                    </button>
+                </form>
+            </div>
+
+            <!-- Leave Applications Table -->
+            <div class="leave-applications">
+                <h2 class="section-title">Leave Applications</h2>
+                
+                <!-- Export by Application Date Section -->
+                <div class="export-section">
+                    <h3>Export by Application Date</h3>
+                    <div class="export-controls">
+                        <div class="date-range">
+                            <label for="startDate">From:</label>
+                            <input type="date" id="startDate" class="date-input">
+                            <label for="endDate">To:</label>
+                            <input type="date" id="endDate" class="date-input">
+                        </div>
+                        <button class="action-button export-btn" id="exportRangeBtn">
+                            <i class="fas fa-file-pdf"></i> Export by Application Date
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Export by Leave Date Section -->
+                <div class="export-section">
+                    <h3>Export by Leave Date</h3>
+                    <div class="export-controls">
+                        <div class="date-range">
+                            <label for="leaveStartDate">Leave Start:</label>
+                            <input type="date" id="leaveStartDate" class="date-input">
+                            <label for="leaveEndDate">Leave End:</label>
+                            <input type="date" id="leaveEndDate" class="date-input">
+                        </div>
+                        <button class="action-button export-btn" id="exportLeaveDateBtn">
+                            <i class="fas fa-file-pdf"></i> Export by Leave Date
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="applications-table" id="applicationsTable">
+                        <thead>
+                            <tr>
+                                <th width="12%">Employee Name</th>
+                                <th width="10%">Employee ID</th>
+                                <th width="10%">Date Applied</th>
+                                <th width="10%">Leave Type</th>
+                                <th width="12%">Leave Dates</th>
+                                <th width="15%">Reason</th>
+                                <th width="8%">Confirmation</th>
+                                <th width="8%">Supervisor</th>
+                                <th width="10%">Department Head</th>
+                                <th width="5%">Status</th>
+                                <th width="10%">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicationsTableBody">
+                            <!-- Table rows will be added dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">International Pharmaceuticals Incorporated</div>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Use</a>
+                    <a href="#">Contact Us</a>
+                    <a href="#">Help & Support</a>
+                </div>
+            </div>
+            <div class="copyright">
+                © 2023 FOMD Portal. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to load personnel data from localStorage
+            function loadPersonnelData() {
+                return JSON.parse(localStorage.getItem('fomdPersonnelData')) || [
+                    { 
+                        name: 'John Smith', 
+                        id: 'IPI-001', 
+                        dateHired: '2020-03-15', 
+                        status: 'ACTIVE',
+                        position: 'Department Head',
+                        employmentStatus: 'Regular'
+                    },
+                    { 
+                        name: 'Maria Garcia', 
+                        id: 'IPI-002', 
+                        dateHired: '2019-07-22', 
+                        status: 'ACTIVE',
+                        position: 'Chemical Engineer',
+                        employmentStatus: 'Regular'
+                    },
+                    { 
+                        name: 'Robert Johnson', 
+                        id: 'IPI-003', 
+                        dateHired: '2021-11-05', 
+                        status: 'ACTIVE',
+                        position: 'Maintenance Technician',
+                        employmentStatus: 'Regular'
+                    },
+                    { 
+                        name: 'Sarah Williams', 
+                        id: 'IPI-004', 
+                        dateHired: '2018-05-12', 
+                        status: 'RESIGNED',
+                        position: 'Section Supervisor',
+                        employmentStatus: 'Regular'
+                    },
+                    { 
+                        name: 'Michael Brown', 
+                        id: 'IPI-005', 
+                        dateHired: '2022-02-28', 
+                        status: 'ACTIVE',
+                        position: 'Operator',
+                        employmentStatus: 'Probationary'
+                    },
+                    { 
+                        name: 'David Wilson', 
+                        id: 'IPI-006', 
+                        dateHired: '2023-01-15', 
+                        status: 'ACTIVE',
+                        position: 'Others',
+                        positionOther: 'Safety Officer',
+                        employmentStatus: 'Contractual'
+                    },
+                    { 
+                        name: 'Jennifer Lee', 
+                        id: 'IPI-007', 
+                        dateHired: '2021-06-10', 
+                        status: 'ACTIVE',
+                        position: 'Department Secretary',
+                        employmentStatus: 'Regular'
+                    }
+                ];
+            }
+
+            // Function to load leave applications from localStorage
+            function loadLeaveApplications() {
+                return JSON.parse(localStorage.getItem('fomdLeaveApplications')) || [];
+            }
+
+            // Function to save leave applications to localStorage
+            function saveLeaveApplications(applications) {
+                localStorage.setItem('fomdLeaveApplications', JSON.stringify(applications));
+            }
+
+            // Populate employee dropdown with active employees from staff directory
+            const employeeSelect = document.getElementById('employeeName');
+            
+            function populateEmployeeDropdown() {
+                // Clear existing options except the first one
+                while (employeeSelect.options.length > 1) {
+                    employeeSelect.remove(1);
+                }
+                
+                // Load personnel data
+                const personnelData = loadPersonnelData();
+                
+                // Filter for active employees only
+                const activeEmployees = personnelData.filter(employee => 
+                    employee.status === 'ACTIVE'
+                );
+                
+                // Add active employees to the dropdown
+                activeEmployees.forEach(employee => {
+                    const option = document.createElement('option');
+                    option.value = employee.id;
+                    option.textContent = employee.name;
+                    employeeSelect.appendChild(option);
+                });
+            }
+            
+            // Initialize the dropdown
+            populateEmployeeDropdown();
+
+            // Update employee ID when name is selected
+            employeeSelect.addEventListener('change', function() {
+                const selectedId = this.value;
+                const employeeIdField = document.getElementById('employeeId');
+                
+                if (selectedId) {
+                    employeeIdField.value = selectedId;
+                } else {
+                    employeeIdField.value = '';
+                }
+            });
+
+            // Set default date for date applied to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateApplied').value = today;
+
+            // Set min date for leave dates to today
+            document.getElementById('leaveStart').min = today;
+            document.getElementById('leaveEnd').min = today;
+
+            // Update min date for leave end when leave start changes
+            document.getElementById('leaveStart').addEventListener('change', function() {
+                document.getElementById('leaveEnd').min = this.value;
+            });
+
+            // Function to update the leave applications table
+            function updateApplicationsTable() {
+                const applications = loadLeaveApplications();
+                const tableBody = document.getElementById('applicationsTableBody');
+                
+                // Clear the table body
+                tableBody.innerHTML = '';
+                
+                // Add rows for each application
+                applications.forEach((application, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // Employee Name column
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = application.employeeName;
+                    
+                    // Employee ID column
+                    const idCell = document.createElement('td');
+                    idCell.textContent = application.employeeId;
+                    
+                    // Date Applied column
+                    const dateAppliedCell = document.createElement('td');
+                    dateAppliedCell.textContent = formatDate(application.dateApplied);
+                    
+                    // Leave Type column
+                    const leaveTypeCell = document.createElement('td');
+                    leaveTypeCell.textContent = application.leaveType;
+                    
+                    // Leave Dates column
+                    const leaveDatesCell = document.createElement('td');
+                    leaveDatesCell.textContent = `${formatDate(application.leaveStart)} to ${formatDate(application.leaveEnd)}`;
+                    
+                    // Reason column
+                    const reasonCell = document.createElement('td');
+                    reasonCell.textContent = application.reason || 'Not specified';
+                    
+                    // Confirmation column with Confirm button
+                    const confirmCell = document.createElement('td');
+                    const confirmButton = document.createElement('button');
+                    confirmButton.className = 'action-button confirm-btn';
+                    confirmButton.textContent = 'Confirm';
+                    confirmButton.disabled = application.confirmed;
+                    confirmButton.addEventListener('click', function() {
+                        confirmApplication(index);
+                    });
+                    confirmCell.appendChild(confirmButton);
+                    
+                    // Supervisor column with Noted button
+                    const supervisorCell = document.createElement('td');
+                    const notedButton = document.createElement('button');
+                    notedButton.className = 'action-button noted-btn';
+                    notedButton.textContent = 'Noted';
+                    notedButton.disabled = !application.confirmed || application.noted;
+                    notedButton.addEventListener('click', function() {
+                        notedApplication(index);
+                    });
+                    supervisorCell.appendChild(notedButton);
+                    
+                    // Department Head column with Approve and Reject buttons
+                    const deptHeadCell = document.createElement('td');
+                    const approveButton = document.createElement('button');
+                    approveButton.className = 'action-button approve-btn';
+                    approveButton.textContent = 'Approve';
+                    approveButton.disabled = !application.noted || application.status === 'Approved' || application.status === 'Rejected';
+                    approveButton.addEventListener('click', function() {
+                        approveApplication(index);
+                    });
+                    
+                    const rejectButton = document.createElement('button');
+                    rejectButton.className = 'action-button reject-btn';
+                    rejectButton.textContent = 'Reject';
+                    rejectButton.disabled = !application.noted || application.status === 'Approved' || application.status === 'Rejected';
+                    rejectButton.addEventListener('click', function() {
+                        rejectApplication(index);
+                    });
+                    
+                    deptHeadCell.appendChild(approveButton);
+                    deptHeadCell.appendChild(rejectButton);
+                    
+                    // Status column
+                    const statusCell = document.createElement('td');
+                    statusCell.textContent = application.status || 'Pending';
+                    statusCell.className = `status-${(application.status || 'pending').toLowerCase()}`;
+                    
+                    // Actions column with Edit and Delete buttons
+                    const actionsCell = document.createElement('td');
+                    const editButton = document.createElement('button');
+                    editButton.className = 'action-button edit-btn';
+                    editButton.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                    editButton.addEventListener('click', function() {
+                        editApplication(index);
+                    });
+                    
+                    const deleteButton = document.createElement('button');
+                    deleteButton.className = 'action-button delete-btn';
+                    deleteButton.innerHTML = '<i class="fas fa-trash"></i> Delete';
+                    deleteButton.addEventListener('click', function() {
+                        deleteApplication(index);
+                    });
+                    
+                    actionsCell.appendChild(editButton);
+                    actionsCell.appendChild(deleteButton);
+                    
+                    row.appendChild(nameCell);
+                    row.appendChild(idCell);
+                    row.appendChild(dateAppliedCell);
+                    row.appendChild(leaveTypeCell);
+                    row.appendChild(leaveDatesCell);
+                    row.appendChild(reasonCell);
+                    row.appendChild(confirmCell);
+                    row.appendChild(supervisorCell);
+                    row.appendChild(deptHeadCell);
+                    row.appendChild(statusCell);
+                    row.appendChild(actionsCell);
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            // Format date for display
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+            }
+            
+            // Function to confirm an application
+            function confirmApplication(index) {
+                const applications = loadLeaveApplications();
+                applications[index].confirmed = true;
+                saveLeaveApplications(applications);
+                updateApplicationsTable();
+            }
+            
+            // Function to mark an application as noted by supervisor
+            function notedApplication(index) {
+                const applications = loadLeaveApplications();
+                applications[index].noted = true;
+                saveLeaveApplications(applications);
+                updateApplicationsTable();
+            }
+            
+            // Function to approve an application
+            function approveApplication(index) {
+                const applications = loadLeaveApplications();
+                applications[index].status = 'Approved';
+                saveLeaveApplications(applications);
+                updateApplicationsTable();
+            }
+            
+            // Function to reject an application
+            function rejectApplication(index) {
+                const applications = loadLeaveApplications();
+                applications[index].status = 'Rejected';
+                saveLeaveApplications(applications);
+                updateApplicationsTable();
+            }
+            
+            // Function to delete an application
+            function deleteApplication(index) {
+                if (confirm('Are you sure you want to delete this leave application?')) {
+                    const applications = loadLeaveApplications();
+                    applications.splice(index, 1);
+                    saveLeaveApplications(applications);
+                    updateApplicationsTable();
+                }
+            }
+            
+            // Function to edit an application
+            function editApplication(index) {
+                const applications = loadLeaveApplications();
+                const application = applications[index];
+                
+                // Populate form with application data
+                document.getElementById('employeeName').value = application.employeeId;
+                document.getElementById('employeeId').value = application.employeeId;
+                document.getElementById('dateApplied').value = application.dateApplied;
+                document.getElementById('leaveType').value = application.leaveType;
+                document.getElementById('leaveStart').value = application.leaveStart;
+                document.getElementById('leaveEnd').value = application.leaveEnd;
+                document.getElementById('reason').value = application.reason || '';
+                
+                // Scroll to form
+                document.getElementById('leaveApplication').scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
+                
+                // Remove the application from the list (will be re-added when submitted)
+                applications.splice(index, 1);
+                saveLeaveApplications(applications);
+                updateApplicationsTable();
+            }
+
+            // Form submission handler
+            document.getElementById('leaveForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const employeeName = document.getElementById('employeeName').options[document.getElementById('employeeName').selectedIndex].text;
+                const employeeId = document.getElementById('employeeId').value;
+                const dateApplied = document.getElementById('dateApplied').value;
+                const leaveType = document.getElementById('leaveType').value;
+                const leaveStart = document.getElementById('leaveStart').value;
+                const leaveEnd = document.getElementById('leaveEnd').value;
+                const reason = document.getElementById('reason').value;
+                
+                // Validate form
+                if (!employeeId || !dateApplied || !leaveType || !leaveStart || !leaveEnd) {
+                    alert('Please fill in all required fields.');
+                    return;
+                }
+                
+                if (leaveStart > leaveEnd) {
+                    alert('Leave end date cannot be before leave start date.');
+                    return;
+                }
+                
+                // Create new application object
+                const newApplication = {
+                    employeeName,
+                    employeeId,
+                    dateApplied,
+                    leaveType,
+                    leaveStart,
+                    leaveEnd,
+                    reason,
+                    confirmed: false,
+                    noted: false,
+                    status: 'Pending'
+                };
+                
+                // Load existing applications
+                const applications = loadLeaveApplications();
+                
+                // Add new application
+                applications.push(newApplication);
+                
+                // Save applications
+                saveLeaveApplications(applications);
+                
+                // Show success message
+                alert(`Leave application submitted successfully!\n\nEmployee: ${employeeName}\nLeave Type: ${leaveType}\nDates: ${leaveStart} to ${leaveEnd}`);
+                
+                // Reset form
+                this.reset();
+                document.getElementById('employeeId').value = '';
+                document.getElementById('dateApplied').value = today;
+                
+                // Re-populate the dropdown in case data changed
+                populateEmployeeDropdown();
+                
+                // Update applications table
+                updateApplicationsTable();
+            });
+
+            // Scroll to leave application form when "New Leave Application" button is clicked
+            document.getElementById('showLeaveForm').addEventListener('click', function() {
+                document.getElementById('leaveApplication').scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
+            });
+
+            // Export to PDF function (all applications)
+            function exportToPDF() {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add title
+                doc.setFontSize(16);
+                doc.setFont(undefined, 'bold');
+                doc.text('FOMD Leave Applications Report', 14, 15);
+                
+                // Add company name
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'normal');
+                doc.text('International Pharmaceuticals Incorporated', 14, 22);
+                doc.text('Facilities Operation and Maintenance Department', 14, 28);
+                
+                // Add export date
+                const exportDate = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                doc.text(`Exported on: ${exportDate}`, 14, 34);
+                doc.text('All Leave Applications', 14, 40);
+                
+                // Prepare table data
+                const applications = loadLeaveApplications();
+                const tableData = applications.map(app => [
+                    app.employeeName,
+                    app.employeeId,
+                    formatDate(app.dateApplied),
+                    app.leaveType,
+                    `${formatDate(app.leaveStart)} to ${formatDate(app.leaveEnd)}`,
+                    app.reason || 'Not specified',
+                    app.status || 'Pending'
+                ]);
+                
+                // Add table
+                doc.autoTable({
+                    startY: 50,
+                    head: [['Employee Name', 'ID', 'Date Applied', 'Leave Type', 'Leave Dates', 'Reason', 'Status']],
+                    body: tableData,
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [52, 73, 94],
+                        textColor: 255,
+                        fontStyle: 'bold'
+                    },
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 3
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 25 },
+                        1: { cellWidth: 20 },
+                        2: { cellWidth: 20 },
+                        3: { cellWidth: 20 },
+                        4: { cellWidth: 30 },
+                        5: { cellWidth: 40 },
+                        6: { cellWidth: 20 }
+                    },
+                    margin: { top: 50 }
+                });
+                
+                // Save the PDF
+                doc.save(`FOMD_Leave_Applications_${new Date().toISOString().split('T')[0]}.pdf`);
+            }
+            
+            // Export by application date range to PDF function
+            function exportDateRangeToPDF() {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                
+                if (!startDate || !endDate) {
+                    alert('Please select both start and end dates.');
+                    return;
+                }
+                
+                if (startDate > endDate) {
+                    alert('Start date cannot be after end date.');
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add title
+                doc.setFontSize(16);
+                doc.setFont(undefined, 'bold');
+                doc.text('FOMD Leave Applications Report', 14, 15);
+                
+                // Add company name
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'normal');
+                doc.text('International Pharmaceuticals Incorporated', 14, 22);
+                doc.text('Facilities Operation and Maintenance Department', 14, 28);
+                
+                // Add export date and range
+                const exportDate = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                doc.text(`Exported on: ${exportDate}`, 14, 34);
+                doc.text(`Application Date Range: ${formatDate(startDate)} to ${formatDate(endDate)}`, 14, 40);
+                
+                // Prepare table data for selected date range
+                const applications = loadLeaveApplications();
+                const filteredApplications = applications.filter(app => {
+                    const appDate = new Date(app.dateApplied);
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    return appDate >= start && appDate <= end;
+                });
+                
+                if (filteredApplications.length === 0) {
+                    alert('No applications found in the selected date range.');
+                    return;
+                }
+                
+                const tableData = filteredApplications.map(app => [
+                    app.employeeName,
+                    app.employeeId,
+                    formatDate(app.dateApplied),
+                    app.leaveType,
+                    `${formatDate(app.leaveStart)} to ${formatDate(app.leaveEnd)}`,
+                    app.reason || 'Not specified',
+                    app.status || 'Pending'
+                ]);
+                
+                // Add table
+                doc.autoTable({
+                    startY: 50,
+                    head: [['Employee Name', 'ID', 'Date Applied', 'Leave Type', 'Leave Dates', 'Reason', 'Status']],
+                    body: tableData,
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [52, 73, 94],
+                        textColor: 255,
+                        fontStyle: 'bold'
+                    },
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 3
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 25 },
+                        1: { cellWidth: 20 },
+                        2: { cellWidth: 20 },
+                        3: { cellWidth: 20 },
+                        4: { cellWidth: 30 },
+                        5: { cellWidth: 40 },
+                        6: { cellWidth: 20 }
+                    },
+                    margin: { top: 50 }
+                });
+                
+                // Save the PDF
+                doc.save(`FOMD_Leave_Applications_${startDate}_to_${endDate}.pdf`);
+            }
+            
+            // Export by leave date range to PDF function
+            function exportLeaveDateRangeToPDF() {
+                const leaveStartDate = document.getElementById('leaveStartDate').value;
+                const leaveEndDate = document.getElementById('leaveEndDate').value;
+                
+                if (!leaveStartDate || !leaveEndDate) {
+                    alert('Please select both leave start and end dates.');
+                    return;
+                }
+                
+                if (leaveStartDate > leaveEndDate) {
+                    alert('Leave start date cannot be after leave end date.');
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Add title
+                doc.setFontSize(16);
+                doc.setFont(undefined, 'bold');
+                doc.text('FOMD Leave Applications Report', 14, 15);
+                
+                // Add company name
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'normal');
+                doc.text('International Pharmaceuticals Incorporated', 14, 22);
+                doc.text('Facilities Operation and Maintenance Department', 14, 28);
+                
+                // Add export date and range
+                const exportDate = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                doc.text(`Exported on: ${exportDate}`, 14, 34);
+                doc.text(`Leave Date Range: ${formatDate(leaveStartDate)} to ${formatDate(leaveEndDate)}`, 14, 40);
+                
+                // Prepare table data for selected leave date range
+                const applications = loadLeaveApplications();
+                const filteredApplications = applications.filter(app => {
+                    const appLeaveStart = new Date(app.leaveStart);
+                    const appLeaveEnd = new Date(app.leaveEnd);
+                    const start = new Date(leaveStartDate);
+                    const end = new Date(leaveEndDate);
+                    
+                    // Check if any part of the leave period falls within the selected range
+                    return (appLeaveStart <= end && appLeaveEnd >= start);
+                });
+                
+                if (filteredApplications.length === 0) {
+                    alert('No applications found with leave dates in the selected range.');
+                    return;
+                }
+                
+                const tableData = filteredApplications.map(app => [
+                    app.employeeName,
+                    app.employeeId,
+                    formatDate(app.dateApplied),
+                    app.leaveType,
+                    `${formatDate(app.leaveStart)} to ${formatDate(app.leaveEnd)}`,
+                    app.reason || 'Not specified',
+                    app.status || 'Pending'
+                ]);
+                
+                // Add table
+                doc.autoTable({
+                    startY: 50,
+                    head: [['Employee Name', 'ID', 'Date Applied', 'Leave Type', 'Leave Dates', 'Reason', 'Status']],
+                    body: tableData,
+                    theme: 'grid',
+                    headStyles: {
+                        fillColor: [52, 73, 94],
+                        textColor: 255,
+                        fontStyle: 'bold'
+                    },
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 3
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 25 },
+                        1: { cellWidth: 20 },
+                        2: { cellWidth: 20 },
+                        3: { cellWidth: 20 },
+                        4: { cellWidth: 30 },
+                        5: { cellWidth: 40 },
+                        6: { cellWidth: 20 }
+                    },
+                    margin: { top: 50 }
+                });
+                
+                // Save the PDF
+                doc.save(`FOMD_Leave_Applications_LeaveDates_${leaveStartDate}_to_${leaveEndDate}.pdf`);
+            }
+
+            // Set up export buttons
+            document.getElementById('exportPdfBtn').addEventListener('click', exportToPDF);
+            document.getElementById('exportRangeBtn').addEventListener('click', exportDateRangeToPDF);
+            document.getElementById('exportLeaveDateBtn').addEventListener('click', exportLeaveDateRangeToPDF);
+
+            // Update dropdown when localStorage changes (from admin page)
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'fomdPersonnelData') {
+                    populateEmployeeDropdown();
+                }
+                if (e.key === 'fomdLeaveApplications') {
+                    updateApplicationsTable();
+                }
+            });
+            
+            // Also update when the page becomes visible again
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    populateEmployeeDropdown();
+                    updateApplicationsTable();
+                }
+            });
+            
+            // Initialize the applications table
+            updateApplicationsTable();
+        });
+    </script>
+</body>
+</html>

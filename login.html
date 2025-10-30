@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOMD Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            /* Background image with fallback */
+            background: url('file:///C:/Users/IPI/Desktop/FOMD%20Portal/background1.png') no-repeat center center fixed;
+            background-size: cover;
+            /* Fallback gradient in case image doesn't load */
+            background-color: #2c3e50;
+            background: linear-gradient(135deg, #2c3e50, #4a6572), 
+                        url('file:///C:/Users/IPI/Desktop/FOMD%20Portal/background1.png') no-repeat center center fixed;
+            background-size: cover;
+            background-blend-mode: overlay;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .login-container {
+            background-color: rgba(245, 245, 245, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 420px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(to right, #3498db, #2c3e50);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #2c3e50;
+            letter-spacing: 1px;
+        }
+
+        .logo p {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #34495e;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #fff;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to right, #3498db, #2980b9);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(to right, #2980b9, #2573a7);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #ddd;
+        }
+
+        .admin-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .admin-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .admin-btn:hover {
+            background: linear-gradient(to right, #c0392b, #a93226);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .register-link a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 38px;
+            background: none;
+            border: none;
+            color: #7f8c8d;
+            cursor: pointer;
+        }
+
+        .access-denied {
+            background-color: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ffcc80;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .access-denied h3 {
+            color: #e65100;
+            margin-bottom: 10px;
+        }
+
+        .access-denied p {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                width: 90%;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>FOMD Portal</h1>
+            <p>Secure Access Gateway</p>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Enter your username" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+                <button type="button" class="password-toggle" id="togglePassword">
+                    <i class="far fa-eye"></i>
+                </button>
+            </div>
+            
+            <button type="submit" class="login-btn">Log In</button>
+        </form>
+
+        <div class="admin-section">
+            <h3>Administrator Access</h3>
+            <button class="admin-btn" id="adminLogin">Administrator Log In</button>
+        </div>
+
+        <div class="register-link">
+            <p>New user? <a href="#" id="registerLink">Request access from administrator</a></p>
+        </div>
+
+        <div id="accessDenied" class="access-denied">
+            <h3><i class="fas fa-exclamation-triangle"></i> Access Forbidden</h3>
+            <p>Your account has not been authorized by the administrator.</p>
+            <p>Please contact your system administrator to request access.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const adminLoginBtn = document.getElementById('adminLogin');
+            const registerLink = document.getElementById('registerLink');
+            const messageDiv = document.getElementById('message');
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const usernameInput = document.getElementById('username');
+            const accessDeniedDiv = document.getElementById('accessDenied');
+
+            // Load user data from localStorage or initialize with default admin account
+            let userData = JSON.parse(localStorage.getItem('fomdUserData')) || [
+                {
+                    username: 'admin',
+                    fullName: 'System Administrator',
+                    password: 'admin123', // In a real app, this would be hashed
+                    userType: 'admin',
+                    status: 'active',
+                    lastLogin: null
+                }
+            ];
+
+            // Toggle password visibility
+            togglePassword.addEventListener('click', function() {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    togglePassword.innerHTML = '<i class="far fa-eye-slash"></i>';
+                } else {
+                    passwordInput.type = 'password';
+                    togglePassword.innerHTML = '<i class="far fa-eye"></i>';
+                }
+            });
+
+            // Regular user login
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value;
+                
+                // Hide previous messages
+                messageDiv.style.display = 'none';
+                accessDeniedDiv.style.display = 'none';
+                
+                // Simple validation
+                if (!username || !password) {
+                    showMessage('Please fill in all fields', 'error');
+                    return;
+                }
+                
+                // Show loading state
+                const loginBtn = document.querySelector('.login-btn');
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+                loginBtn.disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    // Check if user exists in localStorage data
+                    const user = userData.find(u => u.username === username && u.status === 'active');
+                    
+                    if (user && user.password === password) {
+                        // Update last login time
+                        user.lastLogin = new Date().toISOString();
+                        localStorage.setItem('fomdUserData', JSON.stringify(userData));
+                        
+                        // Check if user is admin
+                        if (user.userType === "admin") {
+                            showMessage('Admin login successful! Redirecting to admin panel...', 'success');
+                            
+                            // Redirect admin users to administrator.html
+                            setTimeout(() => {
+                                window.location.href = 'administrator.html';
+                            }, 1500);
+                        } else {
+                            showMessage('Login successful! Redirecting...', 'success');
+                            
+                            // Redirect regular users to index.html
+                            setTimeout(() => {
+                                window.location.href = 'index.html';
+                            }, 1500);
+                        }
+                    } else {
+                        // Check if user exists but password is wrong
+                        if (user) {
+                            showMessage('Invalid password. Please try again.', 'error');
+                        } else {
+                            // User is not authorized
+                            accessDeniedDiv.style.display = 'block';
+                            loginForm.reset();
+                        }
+                        loginBtn.innerHTML = 'Log In';
+                        loginBtn.disabled = false;
+                    }
+                }, 1000);
+            });
+
+            // Admin login
+            adminLoginBtn.addEventListener('click', function() {
+                // Auto-fill admin credentials
+                usernameInput.value = "admin";
+                passwordInput.value = "admin123";
+                
+                // Hide previous messages
+                messageDiv.style.display = 'none';
+                accessDeniedDiv.style.display = 'none';
+                
+                // Show loading state
+                adminLoginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+                adminLoginBtn.disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    // Check admin credentials
+                    const adminUser = userData.find(u => u.username === 'admin' && u.status === 'active');
+                    
+                    if (adminUser && adminUser.password === 'admin123') {
+                        // Update last login time
+                        adminUser.lastLogin = new Date().toISOString();
+                        localStorage.setItem('fomdUserData', JSON.stringify(userData));
+                        
+                        showMessage('Admin login successful! Redirecting to admin panel...', 'success');
+                        
+                        // Redirect after successful login
+                        setTimeout(() => {
+                            // Redirect to administrator.html for admin users
+                            window.location.href = 'administrator.html';
+                        }, 1500);
+                    } else {
+                        showMessage('Administrator access denied. Contact system administrator.', 'error');
+                        adminLoginBtn.innerHTML = 'Administrator Log In';
+                        adminLoginBtn.disabled = false;
+                    }
+                }, 1000);
+            });
+
+            // Registration link
+            registerLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showMessage('Please contact your system administrator to request access to the FOMD Portal.', 'success');
+            });
+
+            // Helper function to show messages
+            function showMessage(text, type) {
+                messageDiv.textContent = text;
+                messageDiv.className = 'message ' + type;
+                messageDiv.style.display = 'block';
+                
+                // Hide message after 5 seconds
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

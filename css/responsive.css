@@ -1,0 +1,94 @@
+@media (max-width: 1100px) {
+    .mv-container {
+        flex-direction: column;
+        max-width: 700px;
+    }
+    
+    .nav-sections {
+        gap: 0;
+    }
+    
+    .nav-btn {
+        padding: 15px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .form-row {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-top {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .company-info {
+        flex-direction: column;
+    }
+    
+    .admin-access {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .nav-sections {
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .mv-card {
+        padding: 30px 25px;
+    }
+    
+    .section-title h2 {
+        font-size: 2rem;
+    }
+    
+    .stats-container {
+        flex-direction: column;
+    }
+    
+    .stat-card {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-btn {
+        padding: 12px 10px;
+        font-size: 0.85rem;
+    }
+    
+    .nav-btn span {
+        display: none;
+    }
+    
+    .mv-card {
+        padding: 25px 20px;
+    }
+    
+    .mv-card h3 {
+        font-size: 1.5rem;
+    }
+    
+    .mv-card p {
+        font-size: 1rem;
+    }
+    
+    .container {
+        padding: 0 15px;
+    }
+    
+    .card {
+        padding: 20px 15px;
+    }
+}

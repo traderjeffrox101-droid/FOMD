@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facilities Operation and Maintenance Organizational Chart</title>
+    <style>
+        :root {
+            --primary-gray: #4a5568;
+            --secondary-gray: #718096;
+            --light-gray: #f7fafc;
+            --medium-gray: #e2e8f0;
+            --dark-gray: #2d3748;
+            --accent-gray: #a0aec0;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border-left: 5px solid var(--primary-gray);
+            position: relative;
+        }
+        
+        h1 {
+            color: var(--dark-gray);
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            color: var(--secondary-gray);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+        
+        .org-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .level {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .node {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            text-align: center;
+            min-width: 200px;
+            position: relative;
+            transition: var(--transition);
+            border-top: 4px solid var(--medium-gray);
+        }
+        
+        .node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .node.vp {
+            border-top-color: #1a202c;
+            min-width: 280px;
+        }
+        
+        .node.manager {
+            border-top-color: var(--dark-gray);
+        }
+        
+        .node.assistant-manager {
+            border-top-color: var(--primary-gray);
+        }
+        
+        .node.secretary {
+            border-top-color: var(--secondary-gray);
+        }
+        
+        .node.supervisor {
+            border-top-color: var(--accent-gray);
+        }
+        
+        .node-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark-gray);
+            font-size: 1rem;
+        }
+        
+        .node-name {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: var(--primary-gray);
+        }
+        
+        .node-department {
+            font-size: 0.9rem;
+            color: var(--secondary-gray);
+        }
+        
+        .connector {
+            position: absolute;
+            background-color: var(--medium-gray);
+        }
+        
+        .connector.vertical {
+            width: 2px;
+            height: 40px;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .connector.horizontal {
+            height: 2px;
+            width: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .connector.diagonal-left {
+            width: 2px;
+            height: 80px;
+            transform: rotate(-30deg);
+            bottom: -40px;
+            left: 30%;
+        }
+        
+        .connector.diagonal-right {
+            width: 2px;
+            height: 80px;
+            transform: rotate(30deg);
+            bottom: -40px;
+            right: 30%;
+        }
+        
+        .facility-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            padding: 25px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 350px;
+            border-left: 4px solid var(--primary-gray);
+        }
+        
+        .facility-title {
+            font-weight: 600;
+            color: var(--primary-gray);
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 1.2rem;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--medium-gray);
+            width: 100%;
+        }
+        
+        .supervisors {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: var(--primary-gray);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background-color: var(--dark-gray);
+        }
+        
+        .facilities-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            width: 100%;
+        }
+        
+        .management-level {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .secretary-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .assistant-manager-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .facility-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .vp-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .navigation-buttons {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-btn {
+            padding: 8px 16px;
+            background-color: var(--primary-gray);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .nav-btn:hover {
+            background-color: var(--dark-gray);
+        }
+        
+        .vp-photo-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 15px;
+            border: 3px solid var(--medium-gray);
+            background-color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .vp-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        
+        .photo-placeholder {
+            color: var(--secondary-gray);
+            text-align: center;
+            font-size: 0.8rem;
+            padding: 10px;
+        }
+        
+        .upload-btn {
+            margin-top: 10px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            background-color: var(--secondary-gray);
+        }
+        
+        .upload-btn:hover {
+            background-color: var(--primary-gray);
+        }
+        
+        .photo-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            justify-content: center;
+        }
+        
+        .remove-btn {
+            background-color: #e53e3e;
+            font-size: 0.8rem;
+            padding: 6px 12px;
+        }
+        
+        .remove-btn:hover {
+            background-color: #c53030;
+        }
+        
+        .storage-info {
+            font-size: 0.7rem;
+            color: var(--secondary-gray);
+            margin-top: 8px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .level {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .node {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .connector.diagonal-left,
+            .connector.diagonal-right {
+                display: none;
+            }
+            
+            .management-level {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .facility-column {
+                width: 100%;
+            }
+            
+            .navigation-buttons {
+                position: static;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+            
+            .vp-photo-container {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="navigation-buttons">
+                <button class="nav-btn" id="backBtn">Back</button>
+                <button class="nav-btn" id="homeBtn">Home</button>
+            </div>
+            <h1>Facilities Operation and Maintenance</h1>
+            <p class="subtitle">Organizational Chart</p>
+        </header>
+        
+        <div class="org-chart">
+            <!-- VP Level -->
+            <div class="level">
+                <div class="vp-container">
+                    <div class="node vp">
+                        <div class="vp-photo-container">
+                            <img id="vpPhoto" class="vp-photo" src="" alt="VP Photo">
+                            <div class="photo-placeholder" id="photoPlaceholder">
+                                No Photo<br>Uploaded
+                            </div>
+                        </div>
+                        <div class="node-title">VP - Engineering & General Services</div>
+                        <div class="node-name">Elizabeth Carter</div>
+                        <div class="node-department">Executive Division</div>
+                        <div class="photo-controls">
+                            <input type="file" id="photoUpload" accept="image/*" style="display: none;">
+                            <button class="upload-btn" id="uploadBtn">Upload Photo</button>
+                            <button class="remove-btn" id="removeBtn" style="display: none;">Remove</button>
+                        </div>
+                        <div class="storage-info">Photo will be saved for future visits</div>
+                        <div class="connector vertical"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Manager Level -->
+            <div class="level">
+                <div class="node manager">
+                    <div class="node-title">Manager</div>
+                    <div class="node-name">John Smith</div>
+                    <div class="node-department">Facilities Operation & Maintenance</div>
+                    <div class="connector vertical"></div>
+                </div>
+            </div>
+            
+            <!-- Secretary and Assistant Managers Level -->
+            <div class="level management-level">
+                <div class="secretary-container">
+                    <div class="node secretary">
+                        <div class="node-title">Department Secretary</div>
+                        <div class="node-name">Sarah Williams</div>
+                        <div class="node-department">Administration</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Production Facilities Level -->
+            <div class="level facilities-container">
+                <!-- Facility 1 -->
+                <div class="facility-column">
+                    <div class="assistant-manager-container">
+                        <div class="node assistant-manager">
+                            <div class="node-title">Assistant Manager</div>
+                            <div class="node-name">Robert Johnson</div>
+                            <div class="node-department">Production Facility 1</div>
+                            <div class="connector vertical"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="facility-container">
+                        <div class="facility-title">Production Facility 1</div>
+                        <div class="supervisors">
+                            <div class="node supervisor">
+                                <div class="node-title">Section Supervisor</div>
+                                <div class="node-name">David Wilson</div>
+                                <div class="node-department">Production Line Maintenance</div>
+                            </div>
+                            <div class="node supervisor">
+                                <div class="node-title">Section Supervisor</div>
+                                <div class="node-name">Lisa Anderson</div>
+                                <div class="node-department">Utilities Operation/Maintenance</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Facility 2 -->
+                <div class="facility-column">
+                    <div class="assistant-manager-container">
+                        <div class="node assistant-manager">
+                            <div class="node-title">Assistant Manager</div>
+                            <div class="node-name">Michael Brown</div>
+                            <div class="node-department">Production Facility 2</div>
+                            <div class="connector vertical"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="facility-container">
+                        <div class="facility-title">Production Facility 2</div>
+                        <div class="supervisors">
+                            <div class="node supervisor">
+                                <div class="node-title">Section Supervisor</div>
+                                <div class="node-name">James Miller</div>
+                                <div class="node-department">Production Line Maintenance</div>
+                            </div>
+                            <div class="node supervisor">
+                                <div class="node-title">Section Supervisor</div>
+                                <div class="node-name">Patricia Taylor</div>
+                                <div class="node-department">Utilities Operation/Maintenance</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Facility 3 -->
+                <div class="facility-column">
+                    <div class="assistant-manager-container">
+                        <div class="node assistant-manager">
+                            <div class="node-title">Assistant Manager</div>
+                            <div class="node-name">Jennifer Davis</div>
+                            <div class="node-department">Production Facility 3</div>
+                            <div class="connector vertical"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="facility-container">
+                        <div class="facility-title">Production Facility 3</div>
+                        <div class="supervisors">
+                            <div class="node supervisor">
+                                <div class="node-title">Section Supervisor</div>
+                                <div class="node-name">Richard Moore</div>
+                                <div class="node-department">Production Line Maintenance</div>
+                            </div>
+                            <div class="node supervisor">
+                                <div class="node-title">Section Supervisor</div>
+                                <div class="node-name">Barbara Thomas</div>
+                                <div class="node-department">Utilities Operation/Maintenance</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="zoomIn">Zoom In</button>
+            <button id="zoomOut">Zoom Out</button>
+            <button id="reset">Reset View</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const orgChart = document.querySelector('.org-chart');
+            let scale = 1;
+            
+            // Zoom functionality
+            document.getElementById('zoomIn').addEventListener('click', function() {
+                if (scale < 1.5) {
+                    scale += 0.1;
+                    orgChart.style.transform = `scale(${scale})`;
+                }
+            });
+            
+            document.getElementById('zoomOut').addEventListener('click', function() {
+                if (scale > 0.7) {
+                    scale -= 0.1;
+                    orgChart.style.transform = `scale(${scale})`;
+                }
+            });
+            
+            document.getElementById('reset').addEventListener('click', function() {
+                scale = 1;
+                orgChart.style.transform = `scale(${scale})`;
+            });
+            
+            // Navigation functionality
+            document.getElementById('backBtn').addEventListener('click', function() {
+                window.history.back();
+            });
+            
+            document.getElementById('homeBtn').addEventListener('click', function() {
+                window.location.href = 'index.html';
+            });
+            
+            // Photo upload functionality with localStorage persistence
+            const photoUpload = document.getElementById('photoUpload');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const removeBtn = document.getElementById('removeBtn');
+            const vpPhoto = document.getElementById('vpPhoto');
+            const photoPlaceholder = document.getElementById('photoPlaceholder');
+            
+            // Load saved photo from localStorage when page loads
+            function loadSavedPhoto() {
+                const savedPhoto = localStorage.getItem('vpPhoto');
+                if (savedPhoto) {
+                    vpPhoto.src = savedPhoto;
+                    vpPhoto.style.display = 'block';
+                    photoPlaceholder.style.display = 'none';
+                    removeBtn.style.display = 'block';
+                }
+            }
+            
+            // Call this function when the page loads
+            loadSavedPhoto();
+            
+            uploadBtn.addEventListener('click', function() {
+                photoUpload.click();
+            });
+            
+            photoUpload.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(event) {
+                        // Save to localStorage
+                        localStorage.setItem('vpPhoto', event.target.result);
+                        
+                        // Update the display
+                        vpPhoto.src = event.target.result;
+                        vpPhoto.style.display = 'block';
+                        photoPlaceholder.style.display = 'none';
+                        removeBtn.style.display = 'block';
+                    }
+                    
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+            
+            removeBtn.addEventListener('click', function() {
+                // Remove from localStorage
+                localStorage.removeItem('vpPhoto');
+                
+                // Update the display
+                vpPhoto.src = '';
+                vpPhoto.style.display = 'none';
+                photoPlaceholder.style.display = 'block';
+                removeBtn.style.display = 'none';
+                photoUpload.value = '';
+            });
+            
+            // Add animation to nodes when they come into view
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.node, .facility-container').forEach(element => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>
